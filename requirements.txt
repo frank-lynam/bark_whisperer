@@ -1,0 +1,12 @@
+transformers
+accelerate
+transformers
+audiolm_pytorch
+fairseq
+encodec
+torch
+torchaudio
+numpy
+funcy
+scipy
+bark
