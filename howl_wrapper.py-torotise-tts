@@ -1,0 +1,32 @@
+import argparse
+import os
+
+import torch
+import torchaudio
+
+from tortoise.api import TextToSpeech, MODELS_DIR
+from tortoise.utils.audio import load_voices
+
+tts = None
+voice_data = None
+SAMPLE_RATE = 24000
+
+def preload():
+  # download and load all models
+  global tts
+  tts = TextToSpeech(models_dir=MODELS_DIR, use_deepspeed=torch.backends.mps.is_available(), kv_cache=True)
+
+def load_voice(voice_name):
+  global voice_data
+  voice_data = load_voices([voice_name])
+
+def get_array(text_prompt, voice_name):
+  global tts, voice_data
+  if voice_data == None:
+    load_voice(voice_name)
+  return tts.tts_with_preset(text_prompt, k=1, voice_samples=voice_data[0], use_deterministic_seed=47,
+           conditioning_latents=voice_data[1], preset="standard", cvvp_amount=0)[0].squeeze(0).cpu()
+
+def make_file(text_prompt, voice_name, output_file):
+  # save audio
+  write_wav(output_file, SAMPLE_RATE, get_array(text_prompt, voice_name))
