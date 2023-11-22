@@ -1,12 +1,20 @@
+# bw
+fastapi
+
+# murmur
 transformers
 accelerate
+
+# howl
+numpy
+scipy
+
+# bark
 transformers
 audiolm_pytorch
 fairseq
 encodec
 torch
 torchaudio
-numpy
 funcy
-scipy
 bark

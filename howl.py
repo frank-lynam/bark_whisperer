@@ -1,7 +1,7 @@
-import sys, os, time
-from bark import SAMPLE_RATE, generate_audio, preload_models
 from scipy.io.wavfile import write as write_wav
 import numpy as np
+
+import sys, os, time
 import howl_wrapper
 
 def hms(s):
@@ -26,7 +26,7 @@ def threshold(a, n, th, j=0):
 def trim(a, n=4, th=0.01):
   return a[threshold(a,n,th):-threshold(a[::-1],n,th)]
 
-def fade(a, n=4, th=0.01, sample_rate=SAMPLE_RATE, fade=0.4):
+def fade(a, n=4, th=0.01, sample_rate=howl_wrapper.SAMPLE_RATE, fade=0.4):
   # Someday I will replace this with a one-liner =]
   s = threshold(a,n,th)
   e = threshold(a[::-1],n,th)
@@ -42,7 +42,7 @@ def fade(a, n=4, th=0.01, sample_rate=SAMPLE_RATE, fade=0.4):
     r = np.concatenate([r, [x * (1 - (i / (ex-e))) for i, x in enumerate(a[e:ex])]])
   return r
 
-def remove_pauses(a, min_pause=0.5, sample_rate=SAMPLE_RATE, th=0.01):
+def remove_pauses(a, min_pause=0.5, sample_rate=howl_wrapper.SAMPLE_RATE, th=0.01):
 
   b = [[]]
   n=-1
@@ -69,7 +69,7 @@ def process(voice, infile, tags=False, filename=None):
 
   os.system("mkdir howl_output 2> /dev/null")
   os.system("rm howl_output/* 2> /dev/null")
-  write_wav(f"howl_output/00000000.wav", SAMPLE_RATE, np.zeros(int(0.5 * SAMPLE_RATE)))
+  write_wav(f"howl_output/00000000.wav", howl_wrapper.SAMPLE_RATE, np.zeros(int(0.5 * howl_wrapper.SAMPLE_RATE)))
 
   print("\nSynthesizing audio...")
   start_time = time.perf_counter()
@@ -113,7 +113,7 @@ def process(voice, infile, tags=False, filename=None):
     dt = (time.perf_counter() - start_time)
     eta = dt * len(l) / i if i > 0 else 0
     print(f'\n{hms(dt)}/{hms(eta)}s, {i+1}/{len(l)}: "{x.strip()}"')
-    write_wav(f"howl_output/{i+1:0>8}.wav", SAMPLE_RATE, remove_pauses(howl_wrapper.get_array(x.strip(), voice)))
+    write_wav(f"howl_output/{i+1:0>8}.wav", howl_wrapper.SAMPLE_RATE, remove_pauses(howl_wrapper.get_array(x.strip(), voice)))
 
   print("\nConcatenating files...")
   if filename == None:

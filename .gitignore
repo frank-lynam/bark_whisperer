@@ -1,3 +1,6 @@
 __pycache__/
 .venv/
 model/
+output/
+whisper_model/
+howl_output/

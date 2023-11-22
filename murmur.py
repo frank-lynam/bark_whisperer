@@ -23,5 +23,5 @@ pipe = pipeline(
     device=device,
 )
 
-result = pipe("test.mp3")
-print(result["text"])
+def listen(inputfile):
+  return pipe(inputfile)["text"]
