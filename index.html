@@ -67,6 +67,12 @@ body {
 
 <script>
 
+if (navigator.mediaDevices==null) {
+  document.getElementById("record").style.display='none'
+  document.getElementById("input").style.textAlign='center'
+  document.getElementById("input").style.padding='2em 0 0 0'
+  document.getElementById("input").innerHTML="Oh no!<br/><br/>I can't detect your microphone...<br/>There's a few reasons this could happen,<br/>but it's almost certainly because you're hosting this insecurely.<br/>You can set your browser to ignore that.<br/>Google it =]"
+} else {
 navigator.mediaDevices.getUserMedia({audio:true}).then((s)=>{
   let mr = new MediaRecorder(s)
   let chunks = []
@@ -91,7 +97,7 @@ navigator.mediaDevices.getUserMedia({audio:true}).then((s)=>{
   mr.onstop = (e)=>
     {document.getElementById("input").innerHTML = '<audio id="audio" controls '
        + `src='${window.URL.createObjectURL(new Blob(chunks, {'type':'audio/wav'}))}'></audio>`}
-})
+})}
 
 document.getElementById("reprocess").addEventListener("click", (e)=>{
   document.getElementById("output").innerHTML="<progress></progress>"
