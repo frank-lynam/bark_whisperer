@@ -24,4 +24,4 @@ pipe = pipeline(
 )
 
 def listen(inputfile):
-  return pipe(inputfile)["text"]
+  return pipe(inputfile)["text"].strip()
