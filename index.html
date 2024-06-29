@@ -1,0 +1,111 @@
+<html>
+<head>
+<title>Bark Whisperer</title>
+<style>
+
+button {
+  width: fit-content;
+  padding: 0.5em;
+  margin: 1em;
+  background: none;
+  border: 1px solid black;
+  font-size: 2em;
+}
+
+button:hover {
+  filter: saturate(2) brightness(0.8);
+}
+
+audio {
+  height: fit-content;
+}
+
+body {
+  background: repeating-linear-gradient(
+  90deg,
+  #64a,
+  #64a 4px,
+  #96c 4px,
+  #96c 8px
+);
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  border: 2px solid darkblue;
+  background: rgba(255, 255, 255, 50%);
+  width: fit-content;
+  padding: 1em 2em;
+  margin: auto;
+}
+
+.title {
+  text-shadow: 2px 0 #96c, -2px 0 #96c, 0 2px #96c, 0 -2px #96c,
+               1px 1px #96c, -1px -1px #96c, 1px -1px #96c, -1px 1px #96c;
+  font-size: 2em; 
+  font-family: "Lucida Handwriting", cursive, fantasy;
+  color: #64a;
+}
+
+</style>
+</head>
+<body>
+<div class="container">
+<div class='title'>Bark Whisperer</div>
+<button id="record" style="background: #6c9">Record</button>
+<div id='input'><i>Record audio first</i></div>
+<button id="upload" style="background: #c96; display:none">Upload</button>
+<div id='text' style='padding-bottom: 2em'></div>
+<div id='output' style='padding-bottom: 1em'></div>
+
+</div>
+
+<script>
+
+navigator.mediaDevices.getUserMedia({audio:true}).then((s)=>{
+  let mr = new MediaRecorder(s)
+  let chunks = []
+
+  document.getElementById("record").addEventListener('click', (e)=>{
+    if (e.target.textContent=='Record') {
+      e.target.innerHTML='Stop';
+      chunks = []
+      mr.start();
+      e.target.style.backgroundColor='#c96';
+      document.getElementById("input").innerHTML="<progress></progress>"
+    } else {
+      e.target.innerHTML='Record';
+      mr.stop();
+      e.target.style.backgroundColor='#6c9';
+      document.getElementById("upload").style.display = ""
+      document.getElementById("text").innerHTML="<i>Upload audio to get the text</i>"
+    }
+  })
+  mr.ondataavailable = (e)=>{chunks.push(e.data)}
+  mr.onstop = (e)=>
+    {document.getElementById("input").innerHTML = '<audio id="audio" controls '
+       + `src='${window.URL.createObjectURL(new Blob(chunks, {'type':'audio/wav'}))}'></audio>`}
+})
+
+document.getElementById("upload").addEventListener("click", ()=>{
+  fetch(document.getElementById("audio").src).then(r=>r.blob())
+    .then(r=>{
+      document.getElementById("output").innerHTML="<progress></progress>"
+      r.stream().getReader().read().then(a=>
+        fetch("/upload", {method: "post", 
+          body: JSON.stringify({file: btoa(a.value)})})).then(r=>r.text()).then(r=>{
+        fetch(`/stt/${r}`).then(t=>t.text()).then(t=>{
+          document.getElementById("text").innerHTML = t
+          fetch(`/tts/${r}`).then(t=>{
+            document.getElementById("output").innerHTML = `<audio controls src='output/${r}'></audio>`
+          })
+      })})
+      document.getElementById("upload").style.backgroundColor='#6c9'
+  })})
+
+</script>
+
+</body>
+</html>

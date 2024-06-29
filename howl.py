@@ -42,6 +42,9 @@ def fade(a, n=4, th=0.01, sample_rate=howl_wrapper.SAMPLE_RATE, fade=0.4):
     r = np.concatenate([r, [x * (1 - (i / (ex-e))) for i, x in enumerate(a[e:ex])]])
   return r
 
+def preload():
+  return howl_wrapper.preload()
+
 def remove_pauses(a, min_pause=0.5, sample_rate=howl_wrapper.SAMPLE_RATE, th=0.01):
 
   b = [[]]
@@ -59,7 +62,7 @@ def remove_pauses(a, min_pause=0.5, sample_rate=howl_wrapper.SAMPLE_RATE, th=0.0
   print(f"Rounded off {100*(len(a)-len(c))/len(a):.1f}%")
   return c
 
-def process(voice, infile, tags=False, filename=None):
+def process(infile, voice='en_speaker_6', tags=False, filename=None):
 
   print(f"\nHaving {voice} read {infile}" + 
     (f" in their {tags} voice" if tags else ""))
