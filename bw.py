@@ -11,6 +11,10 @@ async def index():
     page = fl.read()
   return fastapi.responses.HTMLResponse(page)
 
+@bw.get("/favicon.png")
+async def favicon():
+  return fastapi.responses.FileResponse("favicon.png")
+
 @bw.post("/upload")
 async def upload(file: str = fastapi.Body("")):
   id = [int(x) for x in os.listdir("input") if x.isdigit()]
