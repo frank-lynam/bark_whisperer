@@ -4,6 +4,8 @@ A simple web app to turn your speech into text and back into someone else's spee
 
 It's mostly a demo of how easy it is to just make stuff using the right open source approach, as I talk about in the [demo video](https://youtu.be/wCj3jZNeyI4). My big philosophical argument here is that if your goal is to do a lot of complex things with AI building blocks, then building an ecosystem that allows you to leverage the rapidly moving open source technology environment is arguably the best approach to capability development over custom-developing your own solutions for each narrow piece of the problem space. That way you can solve the big problems faster.
 
+Running on the server in my basement that I did the development work on (jeff, thus the commit ids), this uses about 7 gigs of vram, so it should work on most cards.
+
 ## Use
 
 To start the service, make sure you've installed the requirements and downloaded a whisper model and a translation-supported LLM model (I use google's flan t5) into their respective empty folders and then run `start.sh` to start the server.
