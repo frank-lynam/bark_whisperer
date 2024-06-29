@@ -2,7 +2,7 @@
 
 A simple web app to turn your speech into text and back into someone else's speech, translating it if you like. 
 
-It's mostly a demo of how easy it is to just make stuff using the right open source approach, as I talk about in the [demo video](https://youtu.be/wCj3jZNeyI4). My big philosophcaly argument here is that if your goal is to do a lot of complex things with AI building blocks, then building an ecosystem that allows you to leverage the rapidly moving open source technology environment is arguably the best approach to capability development over custom-developing your own solutions for each narrow piece of the problem space. That way you can solve the big problems faster.
+It's mostly a demo of how easy it is to just make stuff using the right open source approach, as I talk about in the [demo video](https://youtu.be/wCj3jZNeyI4). My big philosophical argument here is that if your goal is to do a lot of complex things with AI building blocks, then building an ecosystem that allows you to leverage the rapidly moving open source technology environment is arguably the best approach to capability development over custom-developing your own solutions for each narrow piece of the problem space. That way you can solve the big problems faster.
 
 ## Use
 
