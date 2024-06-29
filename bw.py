@@ -30,12 +30,12 @@ async def stt(id):
 @bw.get("/text/{id}")
 async def text(id):
   with open(f"text/{id}", "w") as fl:
-    fl.write(text)
+    fl.read(text)
   return text
 
 @bw.get("/tts/{id}")
-async def tts(id):
-  howl.process(f"text/{id}", filename=f"{id}.ogg")
+async def tts(id, tags=False, lang="en"):
+  howl.process(f"text/{id}", filename=f"{id}.ogg", tags=tags)
   os.system(f"mv output/{id}.ogg output/{id}")
   return fastapi.responses.FileResponse(f"output/{id}", media_type='audio/ogg')
 

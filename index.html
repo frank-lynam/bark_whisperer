@@ -58,7 +58,10 @@ body {
 <div id='input'><i>Record audio first</i></div>
 <button id="upload" style="background: #c96; display:none">Upload</button>
 <div id='text' style='padding-bottom: 2em'></div>
-<div id='output' style='padding-bottom: 1em'></div>
+<div id='tagsdiv' style='display:none; padding-bottom: 2em'>
+  <input id='tags' type='text' placeholder="Try 'singing' or 'laughing'" /></div>
+<div id='output'></div>
+<button id="reprocess" style="background: #6c9; display:none; margin-bottom: 0.5em">Reprocess</button>
 
 </div>
 
@@ -81,12 +84,21 @@ navigator.mediaDevices.getUserMedia({audio:true}).then((s)=>{
       e.target.style.backgroundColor='#6c9';
       document.getElementById("upload").style.display = ""
       document.getElementById("text").innerHTML="<i>Upload audio to get the text</i>"
+      document.getElementById("tagsdiv").style.display=""
     }
   })
   mr.ondataavailable = (e)=>{chunks.push(e.data)}
   mr.onstop = (e)=>
     {document.getElementById("input").innerHTML = '<audio id="audio" controls '
        + `src='${window.URL.createObjectURL(new Blob(chunks, {'type':'audio/wav'}))}'></audio>`}
+})
+
+document.getElementById("reprocess").addEventListener("click", (e)=>{
+  document.getElementById("output").innerHTML="<progress></progress>"
+  fetch(`/tts/${e.target.title}` + (document.getElementById('tags').value=="" ? "" : 
+      "?tags=" + document.getElementById("tags").value)).then(t=>{
+    document.getElementById("output").innerHTML = `<audio controls src='output/${e.target.title}?cache=${Math.random()}'></audio>`
+  })
 })
 
 document.getElementById("upload").addEventListener("click", ()=>{
@@ -98,7 +110,10 @@ document.getElementById("upload").addEventListener("click", ()=>{
           body: JSON.stringify({file: btoa(a.value)})})).then(r=>r.text()).then(r=>{
         fetch(`/stt/${r}`).then(t=>t.text()).then(t=>{
           document.getElementById("text").innerHTML = t
-          fetch(`/tts/${r}`).then(t=>{
+          document.getElementById("reprocess").style.display=""
+          document.getElementById("reprocess").title = r
+          fetch(`/tts/${r}` + (document.getElementById('tags').value=="" ? "" : 
+              "?tags=" + document.getElementById("tags").value)).then(t=>{
             document.getElementById("output").innerHTML = `<audio controls src='output/${r}'></audio>`
           })
       })})
