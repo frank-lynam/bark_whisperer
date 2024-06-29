@@ -2,11 +2,11 @@
 
 A simple web app to turn your speech into text and back into someone else's speech, translating it if you like. 
 
-It's mostly a demo of how easy it is to jsut make stuff using the right open source approach, as I talk about in the [demo video](https://youtu.be/wCj3jZNeyI4).
+It's mostly a demo of how easy it is to just make stuff using the right open source approach, as I talk about in the [demo video](https://youtu.be/wCj3jZNeyI4). My big philosophcaly argument here is that if your goal is to do a lot of complex things with AI building blocks, then building an ecosystem that allows you to leverage the rapidly moving open source technology environment is arguably the best approach to capability development over custom-developing your own solutions for each narrow piece of the problem space. That way you can solve the big problems faster.
 
 ## Use
 
-To start the service, make sure you've installed the requirements and downloaded a whisper model and a translation-supported LLM model (I use google's flan t5) and then run `start.sh` to start the server.
+To start the service, make sure you've installed the requirements and downloaded a whisper model and a translation-supported LLM model (I use google's flan t5) into their respective empty folders and then run `start.sh` to start the server.
 
 ## Design
 
@@ -22,6 +22,6 @@ To talk to the LLM, run `python sunshine.py "Translate to German: Hi there!"`.
 
 ### Other Features
 
-There's also `gossip.py`, which allows you to fine-tune your own voice models from reference voices. It works okay, not great. Kind of a limitation of the model, I've seen better voice cloning, but I like bark because it has the most nature feeling cadence. It's nice to listen to.
+There's also `gossip.py`, which allows you to fine-tune your own voice models from reference voices. It works okay, not great. Kind of a limitation of the model, I've seen better voice cloning, but I like bark because it has the most natural feeling cadence. It's nice to listen to.
 
 And then there's `howl_wrapper.py-tortoise-tts`. I actually designed the howl layer to be entirely extensible, so that all the post-processing can be wrapped around any tts engine you like, so long as it has the right api pieces that howl is looking for. This is a wrapper for tortoise tts, which is a really nice tts engine too.
