@@ -1,6 +1,6 @@
 print("Starting bark whisperer...")
 
-import fastapi, howl, murmur, typing, os, base64, json
+import fastapi, howl, murmur, sunshine, typing, os, base64, json
 
 bw = fastapi.FastAPI()
 howl.preload()
@@ -13,7 +13,12 @@ async def index():
 
 @bw.post("/upload")
 async def upload(file: str = fastapi.Body("")):
-  id = max([int(x) for x in os.listdir("input") if x.isdigit()]) + 1
+  id = [int(x) for x in os.listdir("input") if x.isdigit()]
+  if len(id)==0:
+    id = 0
+  else:
+    id=max(id)
+  
   with open(f"input/{id}", "wb") as fl:
     fl.write(bytes(json.loads("["+str(base64.b64decode(file))[5:-1] + "]")))
   os.system(f"ffmpeg -i input/{id} input/{id}.wav")
@@ -29,13 +34,31 @@ async def stt(id):
 
 @bw.get("/text/{id}")
 async def text(id):
-  with open(f"text/{id}", "w") as fl:
-    fl.read(text)
-  return text
+  with open(f"text/{id}") as fl:
+    txt = fl.read()
+  return txt
+
+@bw.get("/langs")
+async def langs():
+  return sunshine.langs()
 
 @bw.get("/tts/{id}")
 async def tts(id, tags=False, lang="en"):
-  howl.process(f"text/{id}", filename=f"{id}.ogg", tags=tags)
+  with open(f"text/{id}") as fl:
+    text = fl.read().strip()
+  for _ in range(10):
+    new_text = sunshine.desert(f"Translate everything here to {sunshine.langs()[lang]}: {text}")
+    if new_text=="":
+      break
+  if new_text=="":
+    text="Translation error translating: " + text
+  else:
+    text=new_text
+
+  with open(f".howl.tmp.{id}", "w") as fl:
+    fl.write(text)
+  howl.process(f".howl.tmp.{id}", filename=f"{id}.ogg", tags=tags, voice=f"{lang}_speaker_6")
+  os.system(f"rm -rf .howl.tmp.{id}")
   os.system(f"mv output/{id}.ogg output/{id}")
   return fastapi.responses.FileResponse(f"output/{id}", media_type='audio/ogg')
 

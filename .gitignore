@@ -1,6 +1,8 @@
 __pycache__/
+.howl.tmp.*
 .venv/
 output/
 input/
 text/
+translate/
 whisper_model/

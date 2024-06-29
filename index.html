@@ -59,7 +59,8 @@ body {
 <button id="upload" style="background: #c96; display:none">Upload</button>
 <div id='text' style='max-width: 20em; padding-bottom: 2em'></div>
 <div id='tagsdiv' style='display:none; padding-bottom: 2em'>
-  <input id='tags' type='text' placeholder="Try 'singing' or 'laughing'" /></div>
+  <input id='tags' type='text' placeholder="Try 'singing' or 'laughing'" /><br/>
+  Translate to: <select id='langs'></select></div>
 <div id='output'></div>
 <button id="reprocess" style="background: #6c9; display:none; margin-bottom: 0.5em">Reprocess</button>
 
@@ -74,39 +75,43 @@ if (navigator.mediaDevices==null) {
   document.getElementById("record").style.display='none'
   document.getElementById("input").style.textAlign='center'
   document.getElementById("input").style.padding='2em 0 0 0'
-  document.getElementById("input").innerHTML="Oh no!<br/><br/>I can't detect your microphone...<br/><br/>There's a few possible reasons for this,<br/>but it's almost certainly because<br/>you're hosting this insecurely.<br/><br/>You can set your browser to ignore that.<br/><br/>Google it =]"
+  document.getElementById("input").innerHTML="Oh no!<br/><br/>I can't detect your microphone...<br/><br/>"
+    + "There's a few possible reasons for this,<br/>but it's almost certainly because<br/>"
+    + "you're hosting this insecurely.<br/><br/>You can set your browser to ignore that.<br/><br/>Google it =]"
 } else {
-navigator.mediaDevices.getUserMedia({audio:true}).then((s)=>{
-  let mr = new MediaRecorder(s)
-  let chunks = []
+  navigator.mediaDevices.getUserMedia({audio:true}).then((s)=>{
+    let mr = new MediaRecorder(s)
+    let chunks = []
 
-  document.getElementById("record").addEventListener('click', (e)=>{
-    if (e.target.textContent=='Record') {
-      e.target.innerHTML='Stop';
-      chunks = []
-      mr.start();
-      e.target.style.backgroundColor='#c96';
-      document.getElementById("input").innerHTML="<progress></progress>"
-    } else {
-      e.target.innerHTML='Record';
-      mr.stop();
-      e.target.style.backgroundColor='#6c9';
-      document.getElementById("upload").style.display = ""
-      document.getElementById("text").innerHTML="<i>Upload audio to get the text</i>"
-      document.getElementById("tagsdiv").style.display=""
-    }
-  })
-  mr.ondataavailable = (e)=>{chunks.push(e.data)}
-  mr.onstop = (e)=>
-    {document.getElementById("input").innerHTML = '<audio id="audio" controls '
-       + `src='${window.URL.createObjectURL(new Blob(chunks, {'type':'audio/wav'}))}'></audio>`}
-})}
+    document.getElementById("record").addEventListener('click', (e)=>{
+      if (e.target.textContent=='Record') {
+        e.target.innerHTML='Stop';
+        chunks = []
+        mr.start();
+        e.target.style.backgroundColor='#c96';
+        document.getElementById("input").innerHTML="<progress></progress>"
+      } else {
+        e.target.innerHTML='Record';
+        mr.stop();
+        e.target.style.backgroundColor='#6c9';
+        document.getElementById("upload").style.display = ""
+        document.getElementById("text").innerHTML="<i>Upload audio to get the text</i>"
+        document.getElementById("tagsdiv").style.display=""
+      }
+    })
+    mr.ondataavailable = (e)=>{chunks.push(e.data)}
+    mr.onstop = (e)=>
+      {document.getElementById("input").innerHTML = '<audio id="audio" controls '
+         + `src='${window.URL.createObjectURL(new Blob(chunks, {'type':'audio/wav'}))}'></audio>`}
+  })}
 
 document.getElementById("reprocess").addEventListener("click", (e)=>{
   document.getElementById("output").innerHTML="<progress></progress>"
-  fetch(`/tts/${e.target.title}` + (document.getElementById('tags').value=="" ? "" : 
-      "?tags=" + document.getElementById("tags").value)).then(t=>{
-    document.getElementById("output").innerHTML = `<audio controls src='output/${e.target.title}?cache=${Math.random()}'></audio>`
+  fetch(`/tts/${e.target.title}?lang=${document.getElementById("langs").value}` 
+    + (document.getElementById('tags').value=="" ? "" : 
+    "&tags=" + document.getElementById("tags").value)).then(t=>{
+    document.getElementById("output").innerHTML = 
+      `<audio controls src='output/${e.target.title}?cache=${Math.random()}'></audio>`
   })
 })
 
@@ -121,13 +126,17 @@ document.getElementById("upload").addEventListener("click", ()=>{
           document.getElementById("text").innerHTML = t
           document.getElementById("reprocess").style.display=""
           document.getElementById("reprocess").title = r
-          fetch(`/tts/${r}` + (document.getElementById('tags').value=="" ? "" : 
-              "?tags=" + document.getElementById("tags").value)).then(t=>{
+          fetch(`/tts/${r}?lang=${document.getElementById("langs").value}` 
+              + (document.getElementById('tags').value=="" ? "" : 
+              "&tags=" + document.getElementById("tags").value)).then(t=>{
             document.getElementById("output").innerHTML = `<audio controls src='output/${r}'></audio>`
           })
       })})
       document.getElementById("upload").style.backgroundColor='#6c9'
   })})
+
+fetch("/langs").then(r=>r.json()).then(r=>document.getElementById('langs').innerHTML=
+  Object.entries(r).map(x=>`<option value='${x[0]}'>${x[1]}</option>`).join("\n"))
 
 </script>
 
