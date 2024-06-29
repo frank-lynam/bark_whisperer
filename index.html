@@ -67,11 +67,14 @@ body {
 
 <script>
 
+if (navigator.userAgent.toLowerCase().includes("mobile"))
+  {document.body.style.zoom = 2.5}
+
 if (navigator.mediaDevices==null) {
   document.getElementById("record").style.display='none'
   document.getElementById("input").style.textAlign='center'
   document.getElementById("input").style.padding='2em 0 0 0'
-  document.getElementById("input").innerHTML="Oh no!<br/><br/>I can't detect your microphone...<br/>There's a few reasons this could happen,<br/>but it's almost certainly because you're hosting this insecurely.<br/>You can set your browser to ignore that.<br/>Google it =]"
+  document.getElementById("input").innerHTML="Oh no!<br/><br/>I can't detect your microphone...<br/><br/>There's a few possible reasons for this,<br/>but it's almost certainly because<br/>you're hosting this insecurely.<br/><br/>You can set your browser to ignore that.<br/><br/>Google it =]"
 } else {
 navigator.mediaDevices.getUserMedia({audio:true}).then((s)=>{
   let mr = new MediaRecorder(s)
